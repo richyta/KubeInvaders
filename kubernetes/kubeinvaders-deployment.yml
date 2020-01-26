@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
@@ -6,7 +6,7 @@ metadata:
   creationTimestamp: null
   generation: 1
   labels:
-    run: kubeinvaders
+    app.kubernetes.io/name: kubeinvaders
   name: kubeinvaders
 spec:
   progressDeadlineSeconds: 600
@@ -14,7 +14,7 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      run: kubeinvaders
+      app.kubernetes.io/name: kubeinvaders
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -24,22 +24,28 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        run: kubeinvaders
+        app.kubernetes.io/name: kubeinvaders
     spec:
       containers:
-      - image: docker.io/luckysideburn/kubeinvaders:latest
+      - image: luckysideburn/kubeinvaders:latest
         imagePullPolicy: Always
         name: kubeinvaders
         resources: {}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
+        envFrom:
+        - configMapRef:
+            name: kubeinvaders-config
         env:
-        - name: UPDATETIME
-          value: "0.5"
-        - name: ALIENPROXIMITY
-          value: "15"
-        - name: HITSLIMIT
-          value: "0"
+        - name: ROUTE_HOST
+          value: $(ROUTE_HOST)
+        - name: NAMESPACE
+          value: $(TARGET_NAMESPACE)
+        - name: TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: kubeinvaders-token
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler

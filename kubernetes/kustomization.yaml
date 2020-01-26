@@ -1,0 +1,40 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- source-vars.yaml
+- kubeinvaders-namespace.yml
+- kubeinvaders-serviceaccount.yml
+- kubeinvaders-token.yml
+- kubeinvaders-clusterrole.yml
+- kubeinvaders-clusterrolebinding.yml
+- kubeinvaders-deployment.yml
+- kubeinvaders-service.yml
+- kubeinvaders-ingress.yml
+vars:
+- fieldref:
+    fieldPath: data.MY_NAMESPACE
+  name: MY_NAMESPACE
+  objref:
+    apiVersion: v1
+    kind: ConfigMap
+    name: source-vars
+- fieldref:
+    fieldPath: data.ROUTE_HOST
+  name: ROUTE_HOST
+  objref:
+    apiVersion: v1
+    kind: ConfigMap
+    name: source-vars
+- fieldref:
+    fieldPath: data.TARGET_NAMESPACE
+  name: TARGET_NAMESPACE
+  objref:
+    apiVersion: v1
+    kind: ConfigMap
+    name: source-vars
+configurations:
+- kustomize-config.yaml
+namespace: kubeinvaders
+configMapGenerator:
+- name: kubeinvaders-config
+  env: kubeinvaders-config.txt

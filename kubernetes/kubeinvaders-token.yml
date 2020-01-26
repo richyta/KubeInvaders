@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kubeinvaders-token
+  annotations:
+    kubernetes.io/service-account.name: kubeinvaders
+type: kubernetes.io/service-account-token
