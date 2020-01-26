@@ -2,8 +2,6 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: kubeinvaders
-  labels:
-    app.kubernetes.io/name: kubeinvaders
 rules:
 - apiGroups: [""]
   resources: ["pods"]

@@ -1,15 +1,22 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: kubeinvaders
 resources:
 - source-vars.yaml
-- kubeinvaders-namespace.yml
-- kubeinvaders-serviceaccount.yml
-- kubeinvaders-token.yml
-- kubeinvaders-clusterrole.yml
-- kubeinvaders-clusterrolebinding.yml
-- kubeinvaders-deployment.yml
-- kubeinvaders-service.yml
-- kubeinvaders-ingress.yml
+- namespace.yaml
+- service-account.yaml
+- token.yaml
+- cluster-role.yaml
+- cluster-role-binding.yaml
+- deployment.yaml
+- service.yaml
+- ingress.yaml
+commonLabels:
+  app.kubernetes.io/name: kubeinvaders
+images:
+- name: luckysideburn/kubeinvaders:latest
+  newName: luckysideburn/kubeinvaders
+  newTag: latest
 vars:
 - fieldref:
     fieldPath: data.MY_NAMESPACE
@@ -34,7 +41,6 @@ vars:
     name: source-vars
 configurations:
 - kustomize-config.yaml
-namespace: kubeinvaders
 configMapGenerator:
 - name: kubeinvaders-config
-  env: kubeinvaders-config.txt
+  env: config.txt
