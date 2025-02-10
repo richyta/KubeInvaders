@@ -1,0 +1,26 @@
+jobs:
+  cpu_attack:
+    image: docker.io/luckysideburn/kubeinvaders-stress-ng:latest
+    command: "stress-ng"
+    args:
+      - --help
+  mem_attack:
+    image: docker.io/luckysideburn/kubeinvaders-stress-ng:latest
+    command: "stress-ng"
+    args:
+      - --help
+experiments:
+  - name: cpu-attack-exp
+    job: cpu-attack
+    loop: 5
+    after:
+      check_url: https://google.it
+      check_payload: ''
+      check_tls_ignore: true
+  - name: mem-attack-exp
+    job: mem-attack
+    loop: 5
+    after:
+      check_url: https://google.it
+      check_payload: ''
+      check_tls_ignore: true

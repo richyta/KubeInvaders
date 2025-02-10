@@ -2,51 +2,74 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
-
-image:
-  repository: luckysideburn/kubeinvaders
-  tag: latest
-  pullPolicy: IfNotPresent
-
 nameOverride: ""
 fullnameOverride: ""
 
+# Additional labels for resources
+additionalLabels: {}
+
+config:
+  # target_namespace where kubeinvaders should be allowed to kill pods
+  target_namespace: "default"
+  alienProximity: 10
+  hitsLimit: 1
+  updateTime: 0.5
+podAnnotations:
+  prometheus.io/scrape: "true"
+rbac:
+  # Specifies whether RBAC resources should be created
+  create: true
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: kubeinvaders
+
+clusterRole:
+  create: true
+  # The name of a cluster role to bind to; if not set and create is
+  # true, a name based on fullname is generated
+  name: kubeinvaders
+
+deployment:
+  replicaCount: 1
+  image:
+    repository: luckysideburn/kubeinvaders
+    tag: v1.9.7
+    pullPolicy: Always
+  extraEnv: []
+  # - name: FOO
+  #   value: "BAR"
+  extraVolumes: []
+  # - name: tmp
+  #   emptyDir: {}
+  extraVolumeMounts: []
+  # - name: tmp
+  #   mountPath: /usr/local/openresty
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  securityContext: {}
+
 service:
   type: ClusterIP
-  port: 8080
+  port: 80
+  targetPort: 8080
 
 ingress:
-  enabled: true
-  annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-  hosts:
-    - host: kubeinvaders.local
-      paths: ["/"]
+  enabled: false
+  legacyIngress: false
+  className: "nginx"
+  annotations: {}
+  hostName: ""
+  tls: {}
 
-  tls:
-    - secretName: chart-example-tls
-      hosts:
-        - chart-example.local
+# Use route_host only if ingress is disabled - please specify also the port like route_host: "kubeinvaders.example.com:8080"
+# The port must be the same of the NodePort service
 
+route_host: ""
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-nodeSelector: {}
-tolerations: []
-
-route_host: kubeinvaders.local
-target_namespace: "foobar"
-hitslimit: 1
-alienproximity: 15
-updatetime: 1
+serviceMonitor:
+  enabled: false
